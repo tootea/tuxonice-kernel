@@ -1411,6 +1411,8 @@ int gfs2_quotad(void *data)
 	DEFINE_WAIT(wait);
 	int empty;
 
+  set_freezable();
+
 	while (!kthread_should_stop()) {
 
 		/* Update the master statfs file */
