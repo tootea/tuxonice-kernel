@@ -7030,12 +7030,13 @@ void md_do_sync(mddev_t *mddev)
 	 *
 	 */
 
+  set_freezable();
+
 	do {
 		mddev->curr_resync = 2;
 
 	try_again:
-		while (freezer_is_on())
-			yield();
+    try_to_freeze();
 
 		if (kthread_should_stop())
 			set_bit(MD_RECOVERY_INTR, &mddev->recovery);
@@ -7060,8 +7061,7 @@ void md_do_sync(mddev_t *mddev)
 					 */
 					continue;
 
-				while (freezer_is_on())
-					yield();
+        try_to_freeze();
 
 				/* We need to wait 'interruptible' so as not to
 				 * contribute to the load average, and not to
@@ -7183,8 +7183,7 @@ void md_do_sync(mddev_t *mddev)
 						 || kthread_should_stop());
 		}
 
-		while (freezer_is_on())
-			yield();
+    try_to_freeze();
 
 		if (kthread_should_stop())
 			goto interrupted;
@@ -7229,9 +7228,7 @@ void md_do_sync(mddev_t *mddev)
 			last_mark = next;
 		}
 
-		while (freezer_is_on())
-			yield();
-
+    try_to_freeze();
 
 		if (kthread_should_stop())
 			goto interrupted;
