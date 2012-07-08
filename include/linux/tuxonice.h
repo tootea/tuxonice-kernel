@@ -14,7 +14,7 @@ extern struct memory_bitmap *precompressed_map;
 #ifdef CONFIG_TOI_ZRAM_SUPPORT
 extern void memory_bm_set_bit(struct memory_bitmap *bm, unsigned long pfn);
 #define PagePrecompressed(page, cpu) (precompressed_map ? \
-		memory_bm_test_bit_index(precompressed_map, page_to_pfn(page)) : 0, cpu)
+		memory_bm_test_bit_index(precompressed_map, page_to_pfn(page), cpu) : 0)
 #define SetPagePrecompressed(page) \
 	(memory_bm_set_bit(precompressed_map, page_to_pfn(page)))
 #define ClearPagePrecompressed(page) \
