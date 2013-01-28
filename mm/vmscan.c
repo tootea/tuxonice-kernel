@@ -1889,7 +1889,9 @@ out:
 		unsigned long scan;
 
 		scan = zone_nr_lru_pages(zone, sc, l);
-		if (priority || noswap) {
+		if (sc->hibernation_mode)
+			scan = SWAP_CLUSTER_MAX;
+		else if (priority || noswap) {
 			scan >>= priority;
 			scan = div64_u64(scan * fraction[file], denominator);
 		}
@@ -1924,7 +1926,7 @@ static inline bool should_continue_reclaim(struct zone *zone,
 	unsigned long pages_for_compaction;
 	unsigned long inactive_lru_pages;
 
-	if (sc->hibernation_mode && sc->nr_to_reclaim >= sc->nr_reclaimed)
+	if (sc->nr_to_reclaim >= sc->nr_reclaimed)
 		return true;
 
 	/* If not in reclaim/compaction mode, stop */
