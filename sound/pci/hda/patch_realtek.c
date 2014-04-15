@@ -695,7 +695,8 @@ static void alc_inv_dmic_sync(struct hda_codec *codec, bool force)
 }
 
 static void alc_inv_dmic_hook(struct hda_codec *codec,
-			     struct snd_ctl_elem_value *ucontrol)
+			      struct snd_kcontrol *kcontrol,
+			      struct snd_ctl_elem_value *ucontrol)
 {
 	alc_inv_dmic_sync(codec, false);
 }
@@ -3141,7 +3142,8 @@ static void alc269_fixup_hp_gpio_mute_hook(void *private_data, int enabled)
 
 /* turn on/off mic-mute LED per capture hook */
 static void alc269_fixup_hp_gpio_mic_mute_hook(struct hda_codec *codec,
-			       struct snd_ctl_elem_value *ucontrol)
+					       struct snd_kcontrol *kcontrol,
+					       struct snd_ctl_elem_value *ucontrol)
 {
 	struct alc_spec *spec = codec->spec;
 	unsigned int oldval = spec->gpio_led;
@@ -3403,7 +3405,8 @@ static void alc_update_headset_mode(struct hda_codec *codec)
 }
 
 static void alc_update_headset_mode_hook(struct hda_codec *codec,
-			     struct snd_ctl_elem_value *ucontrol)
+					 struct snd_kcontrol *kcontrol,
+					 struct snd_ctl_elem_value *ucontrol)
 {
 	alc_update_headset_mode(codec);
 }
@@ -3462,6 +3465,19 @@ static void alc_fixup_headset_mode_no_hp_mic(struct hda_codec *codec,
 	}
 	else
 		alc_fixup_headset_mode(codec, fix, action);
+}
+
+static void alc_no_shutup(struct hda_codec *codec)
+{
+}
+
+static void alc_fixup_no_shutup(struct hda_codec *codec,
+				const struct hda_fixup *fix, int action)
+{
+	if (action == HDA_FIXUP_ACT_PRE_PROBE) {
+		struct alc_spec *spec = codec->spec;
+		spec->shutup = alc_no_shutup;
+	}
 }
 
 static void alc_fixup_headset_mode_alc668(struct hda_codec *codec,
@@ -3674,6 +3690,7 @@ enum {
 	ALC269_FIXUP_HP_GPIO_LED,
 	ALC269_FIXUP_INV_DMIC,
 	ALC269_FIXUP_LENOVO_DOCK,
+	ALC269_FIXUP_NO_SHUTUP,
 	ALC286_FIXUP_SONY_MIC_NO_PRESENCE,
 	ALC269_FIXUP_PINCFG_NO_HP_TO_LINEOUT,
 	ALC269_FIXUP_DELL1_MIC_NO_PRESENCE,
@@ -3840,6 +3857,10 @@ static const struct hda_fixup alc269_fixups[] = {
 		.type = HDA_FIXUP_FUNC,
 		.v.func = alc_fixup_inv_dmic_0x12,
 	},
+	[ALC269_FIXUP_NO_SHUTUP] = {
+		.type = HDA_FIXUP_FUNC,
+		.v.func = alc_fixup_no_shutup,
+	},
 	[ALC269_FIXUP_LENOVO_DOCK] = {
 		.type = HDA_FIXUP_PINS,
 		.v.pins = (const struct hda_pintbl[]) {
@@ -4000,6 +4021,7 @@ static const struct hda_fixup alc269_fixups[] = {
 };
 
 static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+	SND_PCI_QUIRK(0x1025, 0x0283, "Acer TravelMate 8371", ALC269_FIXUP_INV_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x029b, "Acer 1810TZ", ALC269_FIXUP_INV_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x0349, "Acer AOD260", ALC269_FIXUP_INV_DMIC),
 	SND_PCI_QUIRK(0x1025, 0x047c, "Acer AC700", ALC269_FIXUP_ACER_AC700),
@@ -4089,6 +4111,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
 	SND_PCI_QUIRK(0x17aa, 0x2212, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 	SND_PCI_QUIRK(0x17aa, 0x2214, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 	SND_PCI_QUIRK(0x17aa, 0x2215, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
+	SND_PCI_QUIRK(0x17aa, 0x3978, "IdeaPad Y410P", ALC269_FIXUP_NO_SHUTUP),
 	SND_PCI_QUIRK(0x17aa, 0x5013, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
 	SND_PCI_QUIRK(0x17aa, 0x501a, "Thinkpad", ALC283_FIXUP_INT_MIC),
 	SND_PCI_QUIRK(0x17aa, 0x5026, "Thinkpad", ALC269_FIXUP_LIMIT_INT_MIC_BOOST),
