@@ -122,9 +122,9 @@ out:
                 filp_close(file, NULL); file = NULL; \
         }
 
-static void powerdown_cleanup(int toi_or_resume)
+static void powerdown_cleanup(int hibernate_or_resume)
 {
-        if (!toi_or_resume)
+        if (!hibernate_or_resume)
                 return;
 
         CLOSE_FILE(lid_file);
@@ -148,9 +148,9 @@ static void open_file(char *format, char *arg, struct file **var, int mode,
         }
 }
 
-static int powerdown_init(int toi_or_resume)
+static int powerdown_init(int hibernate_or_resume)
 {
-        if (!toi_or_resume)
+        if (!hibernate_or_resume)
                 return 0;
 
         did_suspend_to_both = 0;

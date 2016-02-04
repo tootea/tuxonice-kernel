@@ -169,7 +169,7 @@ void toi_finish_anything(int hibernate_or_resume)
 
 /**
  * toi_start_anything - basic initialisation for TuxOnIce
- * @toi_or_resume:        Whether starting a cycle or attempt at resuming.
+ * @hibernate_or_resume:        Whether starting a cycle or attempt at resuming.
  *
  * Our basic initialisation routine. Take references on modules, use the
  * kernel segment, recheck resume= if no active allocator is set, initialise

@@ -130,9 +130,9 @@ static int toi_prune_rw_cleanup(int writing)
  * toi_prune_init
  */
 
-static int toi_prune_init(int toi_or_resume)
+static int toi_prune_init(int hibernate_or_resume)
 {
-        if (!toi_or_resume)
+        if (!hibernate_or_resume)
                 return 0;
 
         toi_pruned_pages = 0;

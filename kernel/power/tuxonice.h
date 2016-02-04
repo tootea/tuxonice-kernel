@@ -193,8 +193,8 @@ extern struct toi_core_fns *toi_core_fns;
 #define KB(x) ((x) << (PAGE_SHIFT - 10))
 #define MB(x) ((x) >> (20 - PAGE_SHIFT))
 
-extern int toi_start_anything(int toi_or_resume);
-extern void toi_finish_anything(int toi_or_resume);
+extern int toi_start_anything(int hibernate_or_resume);
+extern void toi_finish_anything(int hibernate_or_resume);
 
 extern int save_image_part1(void);
 extern int toi_atomic_restore(void);

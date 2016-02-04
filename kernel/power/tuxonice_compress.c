@@ -93,7 +93,7 @@ static int toi_compress_crypto_prepare(void)
         return 0;
 }
 
-static int toi_compress_rw_cleanup(int writing)
+static int toi_compress_rw_cleanup(int hibernate_or_resume)
 {
         int cpu;
 
@@ -122,9 +122,9 @@ static int toi_compress_rw_cleanup(int writing)
  * toi_compress_init
  */
 
-static int toi_compress_init(int toi_or_resume)
+static int toi_compress_init(int hibernate_or_resume)
 {
-        if (!toi_or_resume)
+        if (!hibernate_or_resume)
                 return 0;
 
         toi_compress_bytes_in = 0;
