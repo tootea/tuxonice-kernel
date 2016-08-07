@@ -1533,21 +1533,6 @@ static char *sanity_check(struct toi_header *sh)
         return NULL;
 }
 
-static DECLARE_WAIT_QUEUE_HEAD(freeze_wait);
-
-#define FREEZE_IN_PROGRESS (~0)
-
-static int freeze_result;
-
-static void do_freeze(struct work_struct *dummy)
-{
-        freeze_result = freeze_processes();
-        wake_up(&freeze_wait);
-        trap_non_toi_io = 1;
-}
-
-static DECLARE_WORK(freeze_work, do_freeze);
-
 /**
  * __read_pageset1 - test for the existence of an image and attempt to load it
  *
@@ -1716,9 +1701,9 @@ static int __read_pageset1(void)
                 goto out_enable_usermodehelper;
 
         current->flags |= PF_NOFREEZE;
-        freeze_result = FREEZE_IN_PROGRESS;
 
-        schedule_work_on(cpumask_first(cpu_online_mask), &freeze_work);
+        freeze_processes();
+        trap_non_toi_io = 1;
 
         toi_cond_pause(1, "About to read original pageset1 locations.");
 
@@ -1769,14 +1754,12 @@ static int __read_pageset1(void)
             toiActiveAllocator->mark_resume_attempted)
                 toiActiveAllocator->mark_resume_attempted(1);
 
-        wait_event(freeze_wait, freeze_result != FREEZE_IN_PROGRESS);
 out:
         current->flags &= ~PF_NOFREEZE;
         toi_free_page(25, (unsigned long) header_buffer);
         return result;
 
 out_thaw:
-        wait_event(freeze_wait, freeze_result != FREEZE_IN_PROGRESS);
         trap_non_toi_io = 0;
         thaw_processes();
 out_enable_usermodehelper:
