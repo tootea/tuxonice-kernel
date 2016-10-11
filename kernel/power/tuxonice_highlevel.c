@@ -229,7 +229,7 @@ prehibernate_err:
                 atomic_inc(&snapshot_device_available);
 snapshotdevice_unavailable:
         if (hibernate_or_resume)
-                mutex_unlock(&pm_mutex);
+                unlock_system_sleep();
         release_super_lock();
         set_fs(oldfs);
         mutex_unlock(&tuxonice_in_use);
