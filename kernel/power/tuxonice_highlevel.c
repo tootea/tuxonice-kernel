@@ -230,7 +230,6 @@ prehibernate_err:
 snapshotdevice_unavailable:
         if (hibernate_or_resume)
                 unlock_system_sleep();
-        release_super_lock();
         set_fs(oldfs);
         mutex_unlock(&tuxonice_in_use);
         return -EBUSY;
